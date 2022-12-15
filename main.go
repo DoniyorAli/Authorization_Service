@@ -4,7 +4,7 @@ import (
 	"UacademyGo/Blogpost/Authorization_Service/config"
 	"UacademyGo/Blogpost/Authorization_Service/protogen/blogpost"
 
-	"UacademyGo/Blogpost/Authorization_Service/services/article"
+	"UacademyGo/Blogpost/Authorization_Service/services/authorization"
 
 	"UacademyGo/Blogpost/Authorization_Service/storage"
 	"UacademyGo/Blogpost/Authorization_Service/storage/postgres"
@@ -47,8 +47,8 @@ func main() {
 
 	srv := grpc.NewServer()
 
-	articleService := article.NewArticleService(stg)
-	blogpost.RegisterArticleServiceServer(srv, articleService)
+	authService := authorization.NewAuthService(stg)
+	blogpost.RegisterAuthServiceServer(srv, authService)
 
 	reflection.Register(srv)
 
