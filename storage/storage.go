@@ -10,4 +10,5 @@ type StorageInter interface {
 	GetUserList(offset, limit int, search string) (dataset *blogpost.GetUserListResponse, err error)
 	UpdateUser(box *blogpost.UpdateUserRequest) error
 	DeleteUser(id string) error
+	GetUserByUsername(username string) (*blogpost.User, error)
 }

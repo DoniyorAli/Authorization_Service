@@ -12,7 +12,7 @@ func (stg Postgres) AddNewUser(id string, box *blogpost.CreateUserRequest) error
 	(
 		id,
 		username,
-		pasword,
+		password,
 		user_type
 	) VALUES (
 		$1,
@@ -45,7 +45,7 @@ func (stg Postgres) GetUserById(id string) (*blogpost.User, error) {
 		created_at,
 		updated_at,
 		deleted_at
-    FROM "user" WHERE ar.id = $1`, id).Scan(
+    FROM "user" WHERE id = $1`, id).Scan(
 		&res.Id,
 		&res.Username,
 		&res.Password,
@@ -81,7 +81,7 @@ func (stg Postgres) GetUserList(offset, limit int, search string) (*blogpost.Get
 	user_type,
 	created_at,
 	updated_at
-	FROM "user" WHERE deleted_at IS NULL AND (title ILIKE '%' || $1 || '%')
+	FROM "user" WHERE deleted_at IS NULL AND (username ILIKE '%' || $1 || '%')
 	LIMIT $2
 	OFFSET $3
 	`, search, limit, offset)
@@ -153,4 +153,42 @@ func (stg Postgres) DeleteUser(id string) error {
 		return nil
 	}
 	return errors.New("user not found")
+}
+
+// *=========================================================================
+func (stg Postgres) GetUserByUsername(username string) (*blogpost.User, error) {
+	res := &blogpost.User{}
+	var deletedAt *time.Time
+	var updatedAt *string
+
+	err := stg.homeDB.QueryRow(`SELECT 
+		id,
+		username,
+		password,
+		user_type,
+		created_at,
+		updated_at,
+		deleted_at
+    FROM "user" WHERE username = $1`, username).Scan(
+		&res.Id,
+		&res.Username,
+		&res.Password,
+		&res.UserType,
+		&res.CreatedAt,
+		&updatedAt,
+		&deletedAt,
+	)
+	if err != nil {
+		return res, err
+	}
+
+	if updatedAt != nil {
+		res.UpdatedAt = *updatedAt
+	}
+
+	if deletedAt != nil {
+		return res, errors.New("user not found")
+	}
+
+	return res, err
 }
