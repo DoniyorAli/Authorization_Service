@@ -1,6 +1,7 @@
 package authorization
 
 import (
+	"UacademyGo/Blogpost/Authorization_Service/config"
 	blogpost "UacademyGo/Blogpost/Authorization_Service/protogen/blogpost"
 	"UacademyGo/Blogpost/Authorization_Service/security"
 	"UacademyGo/Blogpost/Authorization_Service/storage"
@@ -13,12 +14,14 @@ import (
 )
 
 type authService struct {
+	cfg config.Config
 	stg storage.StorageInter
 	blogpost.UnimplementedAuthServiceServer
 }
 
-func NewAuthService(stg storage.StorageInter) *authService {
+func NewAuthService(cfg config.Config, stg storage.StorageInter) *authService {
 	return &authService{
+		cfg: cfg,
 		stg: stg,
 	}
 }

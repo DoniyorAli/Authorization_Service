@@ -37,7 +37,7 @@ func (s *authService) Login(ctx context.Context, req *blogpost.LoginRequest) (*b
 		"username": user.Username,
 	}
 	
-	tokenStr, err := security.GenerateJWT(m, time.Minute*10, "MySecretKey")
+	tokenStr, err := security.GenerateJWT(m, time.Minute*10, s.cfg.SecretKey)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "security.GenerateJWT: %s", err.Error())
 	}
@@ -49,10 +49,10 @@ func (s *authService) Login(ctx context.Context, req *blogpost.LoginRequest) (*b
 
 //*====================================================================================
 
-func (s *authService) HasAccess(ctx context.Context, req *blogpost.TokenRequest) (*blogpost.HasAccesResponse, error) {
+func (s *authService) HasAcces(ctx context.Context, req *blogpost.TokenRequest) (*blogpost.HasAccesResponse, error) {
 	log.Println("HasAccess...")
 
-	result, err := security.ParseClaims(req.Token, "MySecretKey")
+	result, err := security.ParseClaims(req.Token, s.cfg.SecretKey)
 	if err != nil {
 		log.Println(status.Errorf(codes.Unauthenticated, "security.ParseClaims: %s", err.Error()))
 		return &blogpost.HasAccesResponse{
